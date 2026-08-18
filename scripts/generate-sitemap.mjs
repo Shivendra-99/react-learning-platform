@@ -10,7 +10,12 @@ import path from "node:path"
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, "..")
 
-const SITE_URL = process.env.SITE_URL || "https://react-learn.example.com"
+const siteConfigSource = readFileSync(path.join(root, "src/lib/site-config.ts"), "utf-8")
+const siteConfigUrl = siteConfigSource.match(/SITE_URL\s*=\s*"([^"]+)"/)?.[1]
+if (!siteConfigUrl) {
+  throw new Error("generate-sitemap: couldn't find SITE_URL in src/lib/site-config.ts")
+}
+const SITE_URL = process.env.SITE_URL || siteConfigUrl
 
 const source = readFileSync(path.join(root, "src/lib/lessons-data.ts"), "utf-8")
 const slugs = [...source.matchAll(/slug:\s*"([^"]+)"/g)].map((m) => m[1])
