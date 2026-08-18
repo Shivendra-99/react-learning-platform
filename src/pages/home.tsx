@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { Link } from "react-router-dom"
 import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, CheckCircle2, Sparkles, Eye, MousePointerClick } from "lucide-react"
@@ -5,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { lessons, getLessonsBySection } from "@/lib/lessons-data"
 import { useProgress } from "@/context/progress-context"
 import { ReactLoopDiagram } from "@/components/diagram/react-loop-diagram"
+import { useSeo } from "@/hooks/use-seo"
+import { SITE_URL, SITE_NAME, DEFAULT_DESCRIPTION } from "@/lib/site-config"
 
 const PILLARS = [
   { icon: Sparkles, label: "Simple explanations", detail: "No jargon walls — every concept starts in plain English." },
@@ -18,6 +21,43 @@ export default function Home() {
   const firstIncomplete = lessons.find((lesson) => !isComplete(lesson.slug)) ?? lessons[0]
   const hasStarted = completedCount > 0
   const percent = Math.round((completedCount / totalCount) * 100)
+
+  const jsonLd = useMemo(
+    () => ({
+      "@context": "https://schema.org",
+      "@type": "Course",
+      name: SITE_NAME,
+      description: DEFAULT_DESCRIPTION,
+      provider: {
+        "@type": "Organization",
+        name: SITE_NAME,
+        url: SITE_URL,
+      },
+      isAccessibleForFree: true,
+      hasCourseInstance: {
+        "@type": "CourseInstance",
+        courseMode: "online",
+        courseWorkload: "PT4H",
+      },
+      about: "React (JavaScript library)",
+      educationalLevel: "Beginner",
+      hasPart: lessons.map((lesson) => ({
+        "@type": "LearningResource",
+        name: lesson.title,
+        description: lesson.description,
+        url: `${SITE_URL}/lessons/${lesson.slug}`,
+        position: lesson.order,
+      })),
+    }),
+    [],
+  )
+
+  useSeo({
+    title: "Learn React Free — Interactive Tutorials & Live Code Editor",
+    description: DEFAULT_DESCRIPTION,
+    path: "/",
+    jsonLd,
+  })
 
   return (
     <div className="mx-auto max-w-5xl">
