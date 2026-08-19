@@ -1,9 +1,10 @@
 import { useMemo } from "react"
-import { Navigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { getLessonBySlug, SECTIONS } from "@/lib/lessons-data"
 import { LessonHeader } from "@/components/lesson/lesson-header"
 import { LessonFooter } from "@/components/lesson/lesson-footer"
 import { useSeo } from "@/hooks/use-seo"
+import NotFound from "@/pages/not-found"
 import { SITE_URL, SITE_NAME } from "@/lib/site-config"
 
 export default function LessonPage() {
@@ -42,15 +43,20 @@ export default function LessonPage() {
   }, [lesson?.slug])
 
   useSeo({
-    title: lesson ? lesson.title : "Lesson not found",
-    description: lesson ? lesson.description : "This lesson doesn't exist.",
-    path: lesson ? `/lessons/${lesson.slug}` : "/",
+    title: lesson ? lesson.title : "Page not found",
+    description: lesson ? lesson.description : "That page doesn't exist. Head back to the course overview.",
+    // Stay on the requested URL rather than pointing the canonical at "/"
+    path: lesson ? `/lessons/${lesson.slug}` : `/lessons/${slug ?? ""}`,
     type: "article",
     jsonLd,
+    noindex: !lesson,
   })
 
+  // Render the 404 in place instead of redirecting home. A redirect returns 200
+  // from a URL that doesn't exist, which reads as a soft 404 to crawlers, and it
+  // also hides the mistyped URL from the person who followed the broken link.
   if (!lesson) {
-    return <Navigate to="/" replace />
+    return <NotFound />
   }
 
   const LessonContent = lesson.component

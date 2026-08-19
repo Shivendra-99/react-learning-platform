@@ -8,6 +8,13 @@ interface SeoOptions {
   path: string
   type?: "website" | "article"
   jsonLd?: object | object[]
+  /**
+   * Keep this route out of search results. A client-rendered SPA still answers
+   * 200 for a URL that doesn't exist, so without this a "not found" page looks
+   * to a crawler like a real page — a soft 404. Returning a genuine 404 status
+   * would need server rendering or prerendering.
+   */
+  noindex?: boolean
 }
 
 function setMeta(key: string, content: string, attr: "name" | "property" = "name") {
@@ -49,13 +56,16 @@ function setJsonLd(jsonLd: object | object[] | undefined) {
  * execute JavaScript (Googlebot does). It does not fix link-preview scrapers
  * that don't run JS — that needs server-side rendering or prerendering.
  */
-export function useSeo({ title, description, path, type = "website", jsonLd }: SeoOptions) {
+export function useSeo({ title, description, path, type = "website", jsonLd, noindex = false }: SeoOptions) {
   useEffect(() => {
     const fullTitle = `${title} · ${SITE_NAME}`
     const url = `${SITE_URL}${path}`
 
     document.title = fullTitle
 
+    // Set on every route, not just the noindex ones, so navigating away from a
+    // 404 puts the tag back rather than leaving the whole session noindexed.
+    setMeta("robots", noindex ? "noindex, follow" : "index, follow")
     setMeta("description", description)
     setMeta("og:title", fullTitle, "property")
     setMeta("og:description", description, "property")
@@ -70,5 +80,5 @@ export function useSeo({ title, description, path, type = "website", jsonLd }: S
 
     setCanonical(url)
     setJsonLd(jsonLd)
-  }, [title, description, path, type, jsonLd])
+  }, [title, description, path, type, jsonLd, noindex])
 }
