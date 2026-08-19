@@ -1,4 +1,5 @@
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { LiveProvider, LiveEditor, LivePreview, LiveError } from "react-live"
 import { themes } from "prism-react-renderer"
 import { RotateCcw, SquareCode } from "lucide-react"
@@ -27,6 +28,14 @@ const scope = {
   create: createZustandStore,
   lazy: React.lazy,
   Suspense: React.Suspense,
+  // React 19 surface used by the concurrent-UI and actions lessons
+  useTransition: React.useTransition,
+  useDeferredValue: React.useDeferredValue,
+  useOptimistic: React.useOptimistic,
+  useActionState: React.useActionState,
+  use: React.use,
+  startTransition: React.startTransition,
+  createPortal,
 }
 
 export function LiveCodeBlock({ code: initialCode }: LiveCodeBlockProps) {

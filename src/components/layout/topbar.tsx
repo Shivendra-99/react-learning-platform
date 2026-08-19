@@ -1,14 +1,42 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Menu, Moon, Sun, Atom } from "lucide-react"
+import { Menu, Moon, Sun, Atom, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { SidebarNav } from "@/components/layout/sidebar-nav"
+import { CommandPalette } from "@/components/layout/command-palette"
 import { useTheme } from "@/context/theme-context"
+
+/** True when focus is somewhere the user is actually typing. */
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false
+  return (
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.isContentEditable ||
+    // react-live's editor is a contenteditable-ish textarea wrapper
+    target.closest("[contenteditable='true']") !== null
+  )
+}
 
 export function Topbar() {
   const { theme, toggleTheme } = useTheme()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault()
+        setSearchOpen((prev) => !prev)
+      } else if (event.key === "/" && !isTypingTarget(event.target)) {
+        event.preventDefault()
+        setSearchOpen(true)
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [])
 
   return (
     <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/75">
@@ -32,6 +60,18 @@ export function Topbar() {
         </Link>
 
         <div className="ml-auto flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="flex h-8 items-center gap-2 rounded-md border bg-muted/40 px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <Search className="size-4 shrink-0" aria-hidden="true" />
+            <span className="hidden sm:inline">Search lessons</span>
+            <kbd className="ml-1 hidden rounded border bg-background px-1.5 py-0.5 font-mono-code text-[10px] text-muted-foreground sm:inline">
+              ⌘K
+            </kbd>
+          </button>
+
           <Button
             type="button"
             variant="ghost"
@@ -57,6 +97,8 @@ export function Topbar() {
           <SidebarNav onNavigate={() => setMobileOpen(false)} />
         </SheetContent>
       </Sheet>
+
+      <CommandPalette open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
   )
 }

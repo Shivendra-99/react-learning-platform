@@ -7,9 +7,23 @@ interface ProgressContextValue {
   toggleComplete: (slug: string) => void
   completedCount: number
   totalCount: number
+  /** answered quiz id -> what the learner picked and whether it was right */
+  quizAnswers: Record<string, QuizAnswer>
+  getQuizAnswer: (quizId: string) => QuizAnswer | undefined
+  setQuizAnswer: (quizId: string, optionId: string, correct: boolean) => void
+  clearQuizAnswer: (quizId: string) => void
+  quizAnsweredCount: number
+  quizCorrectCount: number
+}
+
+export interface QuizAnswer {
+  /** the option id the learner picked */
+  answer: string
+  correct: boolean
 }
 
 const STORAGE_KEY = "react-learn:progress"
+const QUIZ_STORAGE_KEY = "react-learn:quiz"
 
 const ProgressContext = createContext<ProgressContextValue | null>(null)
 
@@ -25,12 +39,38 @@ function loadCompleted(): Set<string> {
   }
 }
 
+function loadQuizAnswers(): Record<string, QuizAnswer> {
+  if (typeof window === "undefined") return {}
+  try {
+    const raw = window.localStorage.getItem(QUIZ_STORAGE_KEY)
+    if (!raw) return {}
+    const parsed: unknown = JSON.parse(raw)
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {}
+    const out: Record<string, QuizAnswer> = {}
+    for (const [key, value] of Object.entries(parsed as Record<string, unknown>)) {
+      if (!value || typeof value !== "object") continue
+      const { answer, correct } = value as Partial<QuizAnswer>
+      if (typeof answer === "string" && typeof correct === "boolean") {
+        out[key] = { answer, correct }
+      }
+    }
+    return out
+  } catch {
+    return {}
+  }
+}
+
 export function ProgressProvider({ children }: { children: ReactNode }) {
   const [completedSlugs, setCompletedSlugs] = useState<Set<string>>(loadCompleted)
+  const [quizAnswers, setQuizAnswers] = useState<Record<string, QuizAnswer>>(loadQuizAnswers)
 
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify([...completedSlugs]))
   }, [completedSlugs])
+
+  useEffect(() => {
+    window.localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(quizAnswers))
+  }, [quizAnswers])
 
   const toggleComplete = (slug: string) => {
     setCompletedSlugs((prev) => {
@@ -46,6 +86,21 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const isComplete = (slug: string) => completedSlugs.has(slug)
 
+  const getQuizAnswer = (quizId: string) => quizAnswers[quizId]
+
+  const setQuizAnswer = (quizId: string, optionId: string, correct: boolean) => {
+    setQuizAnswers((prev) => ({ ...prev, [quizId]: { answer: optionId, correct } }))
+  }
+
+  const clearQuizAnswer = (quizId: string) => {
+    setQuizAnswers((prev) => {
+      if (!(quizId in prev)) return prev
+      const next = { ...prev }
+      delete next[quizId]
+      return next
+    })
+  }
+
   return (
     <ProgressContext.Provider
       value={{
@@ -54,6 +109,12 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         toggleComplete,
         completedCount: completedSlugs.size,
         totalCount: lessons.length,
+        quizAnswers,
+        getQuizAnswer,
+        setQuizAnswer,
+        clearQuizAnswer,
+        quizAnsweredCount: Object.keys(quizAnswers).length,
+        quizCorrectCount: Object.values(quizAnswers).filter((entry) => entry.correct).length,
       }}
     >
       {children}

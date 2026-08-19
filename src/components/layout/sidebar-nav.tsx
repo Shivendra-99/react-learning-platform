@@ -1,12 +1,12 @@
 import { NavLink } from "react-router-dom"
-import { CheckCircle2 } from "lucide-react"
-import { getLessonsBySection } from "@/lib/lessons-data"
+import { CheckCircle2, HelpCircle } from "lucide-react"
+import { getLessonsBySection, prefetchLesson } from "@/lib/lessons-data"
 import { useProgress } from "@/context/progress-context"
 import { Progress } from "@/components/ui/progress"
 import { cn } from "@/lib/utils"
 
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
-  const { isComplete, completedCount, totalCount } = useProgress()
+  const { isComplete, completedCount, totalCount, quizAnsweredCount, quizCorrectCount } = useProgress()
   const percent = Math.round((completedCount / totalCount) * 100)
   const groups = getLessonsBySection()
 
@@ -20,6 +20,12 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
           </span>
         </div>
         <Progress value={percent} className="h-1.5" />
+        {quizAnsweredCount > 0 ? (
+          <p className="flex items-center gap-1.5 pt-0.5 text-xs text-muted-foreground">
+            <HelpCircle className="size-3.5 shrink-0" aria-hidden="true" />
+            Quizzes: {quizCorrectCount}/{quizAnsweredCount} correct
+          </p>
+        ) : null}
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-6">
@@ -37,6 +43,8 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
                     <NavLink
                       to={`/lessons/${lesson.slug}`}
                       onClick={onNavigate}
+                      onMouseEnter={() => prefetchLesson(lesson.slug)}
+                      onFocus={() => prefetchLesson(lesson.slug)}
                       className={({ isActive }) =>
                         cn(
                           "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm transition-colors",

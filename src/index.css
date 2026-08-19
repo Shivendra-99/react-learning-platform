@@ -140,25 +140,31 @@
   .lesson-prose h3 {
     @apply mt-6 mb-1 text-base font-semibold text-foreground;
     }
-  .lesson-prose p {
+  /*
+   * These are descendant selectors, so without the :not() guard they also style
+   * the internals of any component rendered inside a lesson — which is how a
+   * component's own <ol> ended up with prose list markers on top of its own
+   * numbering. Components opt out by carrying (or sitting under) .not-prose.
+   */
+  .lesson-prose p:not(.not-prose, .not-prose *) {
     @apply text-muted-foreground;
     }
-  .lesson-prose ul {
+  .lesson-prose ul:not(.not-prose, .not-prose *) {
     @apply list-disc space-y-1.5 pl-5 text-muted-foreground;
     }
-  .lesson-prose ol {
+  .lesson-prose ol:not(.not-prose, .not-prose *) {
     @apply list-decimal space-y-1.5 pl-5 text-muted-foreground;
     }
-  .lesson-prose li::marker {
+  .lesson-prose li:not(.not-prose, .not-prose *)::marker {
     @apply text-primary;
     }
-  .lesson-prose strong {
+  .lesson-prose strong:not(.not-prose, .not-prose *) {
     @apply font-semibold text-foreground;
     }
-  .lesson-prose code {
+  .lesson-prose code:not(.not-prose, .not-prose *) {
     @apply rounded bg-muted px-1.5 py-0.5 font-mono-code text-[13px] text-foreground;
     }
-  .lesson-prose a {
+  .lesson-prose a:not(.not-prose, .not-prose *) {
     @apply font-medium text-primary underline underline-offset-4 hover:no-underline;
     }
 }

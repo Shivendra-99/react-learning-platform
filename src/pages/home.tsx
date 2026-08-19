@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { motion, useReducedMotion } from "framer-motion"
 import { ArrowRight, CheckCircle2, Sparkles, Eye, MousePointerClick } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { lessons, getLessonsBySection } from "@/lib/lessons-data"
+import { lessons, getLessonsBySection, prefetchLesson } from "@/lib/lessons-data"
 import { useProgress } from "@/context/progress-context"
 import { ReactLoopDiagram } from "@/components/diagram/react-loop-diagram"
 import { useSeo } from "@/hooks/use-seo"
@@ -140,6 +140,8 @@ export default function Home() {
                     >
                       <Link
                         to={`/lessons/${lesson.slug}`}
+                        onMouseEnter={() => prefetchLesson(lesson.slug)}
+                        onFocus={() => prefetchLesson(lesson.slug)}
                         className="group flex items-start gap-3 rounded-xl border bg-card p-4 transition-colors hover:border-primary/50 hover:bg-accent/40"
                       >
                         <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">

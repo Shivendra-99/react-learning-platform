@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { CheckCircle2, Circle, ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getAdjacentLessons } from "@/lib/lessons-data"
+import { getAdjacentLessons, prefetchLesson } from "@/lib/lessons-data"
 import { useProgress } from "@/context/progress-context"
 import { cn } from "@/lib/utils"
 
@@ -26,6 +26,8 @@ export function LessonFooter({ slug }: { slug: string }) {
         {previous ? (
           <Link
             to={`/lessons/${previous.slug}`}
+            onMouseEnter={() => prefetchLesson(previous.slug)}
+            onFocus={() => prefetchLesson(previous.slug)}
             className="group flex flex-col rounded-lg border p-4 text-sm transition-colors hover:border-primary/50 hover:bg-accent/40"
           >
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -40,6 +42,8 @@ export function LessonFooter({ slug }: { slug: string }) {
         {next ? (
           <Link
             to={`/lessons/${next.slug}`}
+            onMouseEnter={() => prefetchLesson(next.slug)}
+            onFocus={() => prefetchLesson(next.slug)}
             className="group flex flex-col items-end rounded-lg border p-4 text-right text-sm transition-colors hover:border-primary/50 hover:bg-accent/40"
           >
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
