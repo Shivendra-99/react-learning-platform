@@ -4,6 +4,8 @@ import { LiveProvider, LiveEditor, LivePreview, LiveError } from "react-live"
 import { themes } from "prism-react-renderer"
 import { RotateCcw, SquareCode } from "lucide-react"
 import { create as createZustandStore } from "zustand"
+import { configureStore, createSlice } from "@reduxjs/toolkit"
+import { Provider as ReduxProvider, useSelector as useReduxSelector, useDispatch as useReduxDispatch } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { useTheme } from "@/context/theme-context"
 
@@ -19,6 +21,7 @@ const scope = {
   React,
   useState: React.useState,
   useEffect: React.useEffect,
+  useLayoutEffect: React.useLayoutEffect,
   useMemo: React.useMemo,
   useRef: React.useRef,
   useCallback: React.useCallback,
@@ -36,6 +39,12 @@ const scope = {
   use: React.use,
   startTransition: React.startTransition,
   createPortal,
+  // Real Redux Toolkit + react-redux, genuinely installed — not a simulation
+  configureStore,
+  createSlice,
+  Provider: ReduxProvider,
+  useSelector: useReduxSelector,
+  useDispatch: useReduxDispatch,
 }
 
 export function LiveCodeBlock({ code: initialCode }: LiveCodeBlockProps) {

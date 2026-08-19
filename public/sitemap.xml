@@ -61,6 +61,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://react-learning-platform-nine.vercel.app/lessons/styling-react</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://react-learning-platform-nine.vercel.app/lessons/hooks-overview</loc>
     <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
@@ -68,6 +74,12 @@
   </url>
   <url>
     <loc>https://react-learning-platform-nine.vercel.app/lessons/use-effect</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://react-learning-platform-nine.vercel.app/lessons/use-layout-effect</loc>
     <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -181,13 +193,31 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://react-learning-platform-nine.vercel.app/lessons/server-components</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://react-learning-platform-nine.vercel.app/lessons/safer-props</loc>
     <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://react-learning-platform-nine.vercel.app/lessons/accessibility</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://react-learning-platform-nine.vercel.app/lessons/testing-react</loc>
+    <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://react-learning-platform-nine.vercel.app/lessons/deployment</loc>
     <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

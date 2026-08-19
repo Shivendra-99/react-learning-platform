@@ -31,6 +31,11 @@ import {
   Send,
   Braces,
   FlaskConical,
+  Palette,
+  Layers,
+  ServerCog,
+  Accessibility,
+  Rocket,
 } from "lucide-react"
 
 export type Section =
@@ -160,8 +165,19 @@ const lessonDefinitions: LessonDefinition[] = [
     load: () => import("@/lessons/08-forms"),
   },
   {
-    slug: "hooks-overview",
+    slug: "styling-react",
     order: 9,
+    section: "fundamentals",
+    title: "Styling React Components",
+    shortTitle: "Styling",
+    description: "CSS Modules, Tailwind, and CSS-in-JS — what each trades off, and how to pick.",
+    icon: Palette,
+    minutes: 11,
+    load: () => import("@/lessons/09-styling-react"),
+  },
+  {
+    slug: "hooks-overview",
+    order: 10,
     section: "hooks",
     title: "Hooks: The Big Picture",
     shortTitle: "Hooks Overview",
@@ -172,7 +188,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "use-effect",
-    order: 10,
+    order: 11,
     section: "hooks",
     title: "useEffect",
     shortTitle: "useEffect",
@@ -182,8 +198,19 @@ const lessonDefinitions: LessonDefinition[] = [
     load: () => import("@/lessons/10-use-effect"),
   },
   {
+    slug: "use-layout-effect",
+    order: 12,
+    section: "hooks",
+    title: "useLayoutEffect",
+    shortTitle: "useLayoutEffect",
+    description: "The one useEffect runs after the screen updates — this runs before, to stop a flicker.",
+    icon: Layers,
+    minutes: 8,
+    load: () => import("@/lessons/12-use-layout-effect"),
+  },
+  {
     slug: "use-ref",
-    order: 11,
+    order: 13,
     section: "hooks",
     title: "useRef",
     shortTitle: "useRef",
@@ -194,7 +221,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "use-memo",
-    order: 12,
+    order: 14,
     section: "hooks",
     title: "useMemo",
     shortTitle: "useMemo",
@@ -205,7 +232,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "use-callback",
-    order: 13,
+    order: 15,
     section: "hooks",
     title: "useCallback",
     shortTitle: "useCallback",
@@ -216,7 +243,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "use-reducer",
-    order: 14,
+    order: 16,
     section: "hooks",
     title: "State with useReducer",
     shortTitle: "useReducer",
@@ -227,7 +254,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "custom-hooks",
-    order: 15,
+    order: 17,
     section: "hooks",
     title: "Custom Hooks",
     shortTitle: "Custom Hooks",
@@ -238,7 +265,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "rules-of-hooks",
-    order: 16,
+    order: 18,
     section: "hooks",
     title: "The Rules of Hooks",
     shortTitle: "Rules of Hooks",
@@ -249,7 +276,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "fetching-data",
-    order: 17,
+    order: 19,
     section: "real-apps",
     title: "Fetching Data",
     shortTitle: "Fetching Data",
@@ -260,7 +287,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "react-router-basics",
-    order: 18,
+    order: 20,
     section: "real-apps",
     title: "React Router Basics",
     shortTitle: "React Router",
@@ -271,7 +298,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "route-parameters",
-    order: 19,
+    order: 21,
     section: "real-apps",
     title: "Route Parameters",
     shortTitle: "Route Parameters",
@@ -282,7 +309,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "context-api",
-    order: 20,
+    order: 22,
     section: "state-management",
     title: "The Context API",
     shortTitle: "Context API",
@@ -293,7 +320,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "redux-zustand",
-    order: 21,
+    order: 23,
     section: "state-management",
     title: "Redux & Zustand",
     shortTitle: "Redux & Zustand",
@@ -304,7 +331,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "rerenders-and-memo",
-    order: 22,
+    order: 24,
     section: "advanced",
     title: "Re-renders & React.memo",
     shortTitle: "Re-renders & memo",
@@ -315,7 +342,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "code-splitting",
-    order: 23,
+    order: 25,
     section: "advanced",
     title: "Code Splitting with lazy & Suspense",
     shortTitle: "Code Splitting",
@@ -326,7 +353,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "suspense",
-    order: 24,
+    order: 26,
     section: "advanced",
     title: "Suspense & Loading States",
     shortTitle: "Suspense",
@@ -337,7 +364,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "error-boundaries",
-    order: 25,
+    order: 27,
     section: "advanced",
     title: "Error Boundaries",
     shortTitle: "Error Boundaries",
@@ -348,7 +375,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "portals",
-    order: 26,
+    order: 28,
     section: "advanced",
     title: "Portals",
     shortTitle: "Portals",
@@ -359,7 +386,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "transitions",
-    order: 27,
+    order: 29,
     section: "advanced",
     title: "Transitions & Concurrent UI",
     shortTitle: "Transitions",
@@ -370,7 +397,7 @@ const lessonDefinitions: LessonDefinition[] = [
   },
   {
     slug: "actions-and-optimistic",
-    order: 28,
+    order: 30,
     section: "advanced",
     title: "React 19 Actions & Optimistic UI",
     shortTitle: "Actions & Optimistic",
@@ -380,8 +407,19 @@ const lessonDefinitions: LessonDefinition[] = [
     load: () => import("@/lessons/28-actions-and-optimistic"),
   },
   {
+    slug: "server-components",
+    order: 31,
+    section: "advanced",
+    title: "Server Components, Briefly",
+    shortTitle: "Server Components",
+    description: "What changes once part of your tree runs only on the server, not in the browser.",
+    icon: ServerCog,
+    minutes: 10,
+    load: () => import("@/lessons/31-server-components"),
+  },
+  {
     slug: "safer-props",
-    order: 29,
+    order: 32,
     section: "production",
     title: "Safer Props in Plain JavaScript",
     shortTitle: "Safer Props",
@@ -391,8 +429,19 @@ const lessonDefinitions: LessonDefinition[] = [
     load: () => import("@/lessons/29-safer-props"),
   },
   {
+    slug: "accessibility",
+    order: 33,
+    section: "production",
+    title: "Accessibility (a11y)",
+    shortTitle: "Accessibility",
+    description: "Semantic HTML, focus, and keyboard support — so React apps work for everyone.",
+    icon: Accessibility,
+    minutes: 12,
+    load: () => import("@/lessons/33-accessibility"),
+  },
+  {
     slug: "testing-react",
-    order: 30,
+    order: 34,
     section: "production",
     title: "Testing React Components",
     shortTitle: "Testing",
@@ -400,6 +449,17 @@ const lessonDefinitions: LessonDefinition[] = [
     icon: FlaskConical,
     minutes: 13,
     load: () => import("@/lessons/30-testing-react"),
+  },
+  {
+    slug: "deployment",
+    order: 35,
+    section: "production",
+    title: "Building & Deploying",
+    shortTitle: "Deployment",
+    description: "Environment variables, the production build, and what actually ships to users.",
+    icon: Rocket,
+    minutes: 11,
+    load: () => import("@/lessons/35-deployment"),
   },
 ]
 
