@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { CheckCircle2, HelpCircle } from "lucide-react"
+import { CheckCircle2, HelpCircle, Briefcase } from "lucide-react"
 import { getLessonsBySection, prefetchLesson } from "@/lib/lessons-data"
 import { useProgress } from "@/context/progress-context"
 import { Progress } from "@/components/ui/progress"
@@ -11,7 +11,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const groups = getLessonsBySection()
 
   return (
-    <nav aria-label="Lessons" className="flex h-full flex-col">
+    <nav aria-label="Course navigation" className="flex h-full flex-col">
       <div className="space-y-2 px-4 pt-5 pb-4">
         <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
           <span>Your progress</span>
@@ -26,6 +26,29 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             Quizzes: {quizCorrectCount}/{quizAnsweredCount} correct
           </p>
         ) : null}
+      </div>
+
+      {/*
+        Sits outside the scrolling lesson list so it stays reachable from any
+        page — the home page button is easy to scroll past and never appears
+        once you're inside a lesson.
+      */}
+      <div className="px-2 pb-3">
+        <NavLink
+          to="/interview-questions"
+          onClick={onNavigate}
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-2.5 rounded-md border px-2.5 py-2 text-sm transition-colors",
+              isActive
+                ? "border-primary/40 bg-primary/10 font-medium text-primary"
+                : "border-border text-muted-foreground hover:bg-accent/60 hover:text-foreground",
+            )
+          }
+        >
+          <Briefcase className="size-4 shrink-0" aria-hidden="true" />
+          <span className="min-w-0 flex-1 truncate">Interview Questions</span>
+        </NavLink>
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-6">

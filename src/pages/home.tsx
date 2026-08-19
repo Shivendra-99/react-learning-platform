@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { Link } from "react-router-dom"
 import { motion, useReducedMotion } from "framer-motion"
-import { ArrowRight, CheckCircle2, Sparkles, Eye, MousePointerClick } from "lucide-react"
+import { ArrowRight, CheckCircle2, Sparkles, Eye, MousePointerClick, Briefcase } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { lessons, getLessonsBySection, prefetchLesson } from "@/lib/lessons-data"
 import { useProgress } from "@/context/progress-context"
@@ -79,7 +79,13 @@ export default function Home() {
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button asChild size="lg" variant="outline" className="gap-2">
+              <Link to="/interview-questions">
+                <Briefcase className="size-4" aria-hidden="true" />
+                Interview questions
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="ghost">
               <Link to="#course-outline">Explore React concepts</Link>
             </Button>
           </div>

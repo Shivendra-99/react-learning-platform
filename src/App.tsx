@@ -3,9 +3,12 @@ import { ThemeProvider } from "@/context/theme-context"
 import { ProgressProvider } from "@/context/progress-context"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { AppLayout } from "@/components/layout/app-layout"
+import { lazy } from "react"
 import Home from "@/pages/home"
 import LessonPage from "@/pages/lesson-page"
 import NotFound from "@/pages/not-found"
+
+const InterviewQuestionsPage = lazy(() => import("@/pages/interview-questions"))
 
 export default function App() {
   return (
@@ -22,6 +25,7 @@ export default function App() {
             <Routes>
               <Route element={<AppLayout />}>
                 <Route path="/" element={<Home />} />
+                <Route path="/interview-questions" element={<InterviewQuestionsPage />} />
                 <Route path="/lessons/:slug" element={<LessonPage />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
