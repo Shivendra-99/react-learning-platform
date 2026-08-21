@@ -229,6 +229,21 @@ export const SIMPLE_ANSWERS: Record<string, string> = {
 
   "not-found-page":
     "Add a catch-all route at the very bottom that matches anything the earlier routes didn't. Two things people miss: tell search engines not to index it, because the page technically reports 'everything's fine' even though it isn't; and don't bounce people to the homepage, because then they can't see what they mistyped.",
+
+  "unmount-late-response":
+    "People used to call this a memory leak because older React would print a scary warning about it. That warning is gone now — it's actually harmless. The real problem is different: if you leave a search page before the results come back, and then a slower, older answer arrives after a newer one, it can overwrite the newer, correct answer with old, wrong data. Cancelling the request when you leave stops that mix-up, like hanging up a phone call instead of letting it ring into an empty room.",
+
+  "react-memo-comparison":
+    "React only does a quick, shallow check — it doesn't look deeply. A number or a word is compared by its actual value, so 5 always equals 5. But an object or a list is compared by whether it's literally the same box, not by what's inside it. Two identical shopping lists written on two different pieces of paper still count as 'different' to React, even though every item on them matches.",
+
+  "pagination-vs-infinite-scroll":
+    "Pagination is a book with numbered pages — you can flip to page 3 and come back to it later. Infinite scroll is a scroll of parchment that keeps unrolling — great for just browsing, but there's no 'page 3' to return to. Use pages when people need to find their way back to something specific; use endless scroll when they're just browsing for browsing's sake.",
+
+  "debounce-vs-throttle":
+    "Debounce waits for you to stop talking before replying — perfect for a search box, since there's no point reacting to 'r', 're', 're a' while someone's still typing 'react'. Throttle is a bouncer letting one person through every few seconds no matter how many are pushing at the door — right for something continuous like scrolling, where you want steady updates, not silence until it stops.",
+
+  "duplicate-click-prevention":
+    "Grey out the button the moment it's clicked, so a second click has nothing to click on. The extra trick worth knowing: don't rely only on 'is it loading' to decide, because two very fast clicks can both sneak through before the page even notices the first one happened — a proper instant on/off switch closes that gap. And always double-check on the server too, since a determined user can click a button that isn't even there.",
 }
 
 /** Ids in the question bank with no plain-English version yet. */

@@ -415,6 +415,31 @@ function Input({ onSend }) {
     related: "use-effect",
   },
   {
+    id: "unmount-late-response",
+    category: "hooks",
+    question: "What happens if a component unmounts before its API call finishes — is that a memory leak?",
+    answer:
+      "It used to look like one. In React 16 and 17, calling a state setter after unmount printed a console warning — 'Can't perform a React state update on an unmounted component' — and that warning is where the memory-leak framing comes from. React 18 removed it: a stale setState call after unmount is now a harmless no-op, and there's no actual memory being retained by the call itself. The real reasons to still cancel the request are different and better: a wasted network request that nobody will ever see the result of, and — the more important one — a genuine race condition. If a fast second request can resolve before a slow first one, the first response can land after the second and overwrite newer data with stale data, with no unmount involved at all. AbortController fixes both: pass its signal to fetch, and cancel it in the effect's cleanup function.",
+    code: {
+      caption: "Cancelling on unmount — and on every re-run",
+      snippet: `useEffect(() => {
+  const controller = new AbortController();
+
+  fetch(\`/api/users/\${id}\`, { signal: controller.signal })
+    .then((res) => res.json())
+    .then(setUser)
+    .catch((err) => {
+      if (err.name !== "AbortError") setError(err);
+    });
+
+  // Runs on unmount, AND before the effect re-runs for a new id —
+  // that second case is what actually prevents the race condition
+  return () => controller.abort();
+}, [id]);`,
+    },
+    related: "fetching-data",
+  },
+  {
     id: "dependency-array",
     category: "hooks",
     question: "What's the difference between omitting the dependency array, passing [], and listing values?",
@@ -780,6 +805,31 @@ function List({ items }) {
     related: "rerenders-and-memo",
   },
   {
+    id: "react-memo-comparison",
+    category: "performance",
+    question: "How does React.memo's prop comparison actually work?",
+    answer:
+      "It's a shallow comparison — React checks each prop with Object.is against its previous value, one level deep, not a deep equality check. For primitives (strings, numbers, booleans) that comparison is by value, so passing the number 5 twice in a row always counts as 'unchanged'. For objects, arrays, and functions it's by reference, so two objects with identical contents still count as 'changed' if they're not the literal same object in memory. That's the entire explanation behind the classic 'I wrapped it in memo but it still re-renders' complaint: a prop like `user={{ name }}` or `onClick={() => ...}` written inline creates a brand-new object or function on every parent render, so the reference comparison reports a change every single time even though nothing meaningful is different.",
+    code: {
+      caption: "Same values, different verdicts",
+      snippet: `const Row = React.memo(function Row({ id, config }) {
+  console.log("rendered");
+  return <li>{id}</li>;
+});
+
+// id is a primitive — compared by value.
+// Passing 5 twice in a row: memo skips the re-render.
+<Row id={5} config={stableConfig} />
+
+// config is an object literal created fresh on every
+// parent render — compared by reference. Even with
+// identical { theme: "dark" } contents each time,
+// memo sees a "new" object and re-renders anyway.
+<Row id={5} config={{ theme: "dark" }} />`,
+    },
+    related: "rerenders-and-memo",
+  },
+  {
     id: "optimize-checklist",
     category: "performance",
     question: "How do you optimize the performance of a React application?",
@@ -840,6 +890,58 @@ const About = lazy(() => import("./About"));
     question: "How would you render a list of ten thousand rows?",
     answer:
       "Virtualisation — only render the rows currently visible plus a small buffer, and recycle them as the user scrolls. Libraries like TanStack Virtual or react-window handle the measurement and positioning. The reason it matters is that the cost is in the DOM nodes rather than in React: ten thousand rows means ten thousand sets of elements the browser has to lay out, style, and paint. Pagination or infinite scroll are the other valid answers, and are often better product decisions than showing ten thousand rows at all.",
+  },
+  {
+    id: "pagination-vs-infinite-scroll",
+    category: "performance",
+    question: "What's the difference between pagination and infinite scroll, and how do you choose?",
+    answer:
+      "Both exist to avoid rendering a huge list at once, and both are compatible with virtualisation on top — they're not an alternative to it, they're an alternative to each other for how the user requests more data. Pagination shows a fixed page and waits for an explicit action — clicking 'Next' or a page number — which gives the user a stable, bookmarkable, shareable position ('page 3') and a sense of total size ('142 results'). Infinite scroll fetches the next batch automatically as the user nears the bottom, which reads as more effortless but loses that stable position — there's no honest way to bookmark or return to 'partway down an infinite scroll,' and a footer becomes unreachable or has to be handled specially. Pick pagination for data people search, reference, or need to return to a specific position in — admin tables, search results, order history. Pick infinite scroll for content meant to be consumed as a continuous stream — a social feed, a photo grid — where position doesn't matter and momentum does.",
+    table: {
+      columns: ["Pagination", "Infinite scroll"],
+      rows: [
+        ["User explicitly requests the next page", "Next batch loads automatically near the bottom"],
+        ["Bookmarkable, shareable position (page 3)", "No stable position to return to"],
+        ["Shows total size — '142 results'", "Total size is often unknown or irrelevant"],
+        ["Footer stays reachable", "Footer can become unreachable without special handling"],
+        ["Best for search results, tables, order history", "Best for feeds and continuous browsing"],
+      ],
+    },
+    related: "lists-and-keys",
+  },
+  {
+    id: "debounce-vs-throttle",
+    category: "performance",
+    question: "What's the difference between debounce and throttle, and when do you use each?",
+    answer:
+      "Both limit how often a function runs in response to a rapid-fire event, but they wait for different things. Debounce waits for a pause — it keeps pushing the call back on every new event, and only actually runs once the events stop for a given delay. That's exactly right for a search box: firing a request on every keystroke wastes calls on states the user is about to type past anyway, and debouncing waits until they've actually stopped typing. Throttle runs at most once per fixed interval regardless of how many events fire in between, which fits a continuous stream you need to sample rather than wait out — a scroll handler, a resize handler, a drag. Debouncing a scroll handler would mean it never fires at all while the user keeps scrolling, which is usually the wrong behaviour.",
+    code: {
+      caption: "Same shape, different trigger condition",
+      snippet: `function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
+// Search box: only fires after typing stops for 300ms
+const debouncedSearch = debounce(runSearch, 300);
+
+function throttle(fn, interval) {
+  let last = 0;
+  return (...args) => {
+    const now = Date.now();
+    if (now - last >= interval) {
+      last = now;
+      fn(...args);
+    }
+  };
+}
+// Scroll handler: fires at most once every 200ms,
+// no matter how many scroll events fire in between
+const throttledOnScroll = throttle(updatePosition, 200);`,
+    },
+    related: "use-effect",
   },
 
   // ------------------------------------------------------------------- advanced
@@ -1157,6 +1259,40 @@ function Signup() {
   load();
   return () => controller.abort();
 }, [id]);`,
+    },
+    related: "fetching-data",
+  },
+  {
+    id: "duplicate-click-prevention",
+    category: "practical",
+    question: "How do you stop a double-click from firing a duplicate API call?",
+    answer:
+      "Disable the trigger for the duration of the request — usually by driving the button's disabled prop off the same loading state that's already tracking the request, so there's no separate flag to keep in sync. The subtlety worth knowing: gating purely on state can still race, because state updates aren't applied synchronously. Two clicks that both fire before the first setLoading(true) has actually re-rendered the button can both slip through the check. A ref-based guard closes that gap, since a ref is read and written synchronously, in the same tick — check it and flip it before the request starts, not after a state update commits. Either way, this is a UX improvement, not a security boundary: a request forged directly against the API skips the disabled button entirely, so genuine protection against a duplicate action — booking two seats, charging twice — has to be enforced server-side too, typically with an idempotency key the client generates once per action and the server deduplicates on.",
+    code: {
+      caption: "State for the UI, a ref to close the race",
+      snippet: `function CheckoutButton() {
+  const [loading, setLoading] = useState(false);
+  const inFlight = useRef(false);
+
+  async function handleClick() {
+    if (inFlight.current) return; // synchronous — closes the double-click race
+    inFlight.current = true;
+    setLoading(true);
+
+    try {
+      await placeOrder();
+    } finally {
+      inFlight.current = false;
+      setLoading(false);
+    }
+  }
+
+  return (
+    <button onClick={handleClick} disabled={loading}>
+      {loading ? "Placing order…" : "Place order"}
+    </button>
+  );
+}`,
     },
     related: "fetching-data",
   },
